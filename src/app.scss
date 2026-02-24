@@ -1,0 +1,94 @@
+page {
+  background-color: #f5f5f5;
+}
+
+.container {
+  padding: 24px;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.field-label {
+  font-size: 28px;
+  color: #333333;
+  margin-bottom: 12px;
+}
+
+.field-input {
+  background-color: #f7f8fa;
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.primary-btn {
+  margin-top: 16px;
+  height: 88px;
+  border-radius: 44px;
+  background: linear-gradient(135deg, #3370ff, #6c5ce7);
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.hint-text {
+  font-size: 24px;
+  color: #999999;
+  line-height: 1.6;
+}
+
+.section-title {
+  margin-top: 32px;
+  margin-bottom: 16px;
+  font-size: 30px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.comment-item {
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.comment-meta {
+  font-size: 22px;
+  color: #999999;
+  margin-bottom: 6px;
+}
+
+.comment-content {
+  font-size: 26px;
+  color: #333333;
+  line-height: 1.6;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 20px;
+  margin-left: 8px;
+}
+
+.badge-safe {
+  background-color: #e6f7e9;
+  color: #28a745;
+}
+
+.badge-malicious {
+  background-color: #ffecec;
+  color: #d93025;
+}
+
+.summary-row {
+  margin-top: 12px;
+  font-size: 24px;
+  color: #666666;
+}
+
