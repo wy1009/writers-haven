@@ -184,6 +184,9 @@ async function fetchCommentsByPage(params: {
       content = content.trim();
     }
 
+    // 统一移除正文最前面的“所评章节：x”或“当前章节：x”这一行前缀
+    content = content.replace(/^(?:所评章节|当前章节)[：:]\s*\S+\s*/u, '').trim();
+
     if (!content) {
       continue;
     }

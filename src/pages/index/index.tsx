@@ -246,25 +246,23 @@ const IndexPage: React.FC = () => {
               <Text>，恶意 {maliciousCount} 条（已自动隐藏）。</Text>
             </View>
             <View className='pagination-row'>
-              {currentPage > 1 && (
-                <Button
-                  size='mini'
-                  disabled={loading}
-                  onClick={handlePrevPage}
-                >
-                  上一页
-                </Button>
-              )}
+              <Button
+                size='mini'
+                className='pagination-btn'
+                disabled={loading || currentPage <= 1}
+                onClick={handlePrevPage}
+              >
+                上一页
+              </Button>
               <Text>第 {currentPage} 页</Text>
-              {hasMore && (
-                <Button
-                  size='mini'
-                  disabled={loading}
-                  onClick={handleNextPage}
-                >
-                  下一页
-                </Button>
-              )}
+              <Button
+                size='mini'
+                className='pagination-btn'
+                disabled={loading || !hasMore}
+                onClick={handleNextPage}
+              >
+                下一页
+              </Button>
             </View>
           </>
         )}

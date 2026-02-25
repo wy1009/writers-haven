@@ -108,3 +108,9 @@
   font-size: 24px;
 }
 
+.pagination-btn[disabled] {
+  background-color: #f5f5f5 !important;
+  color: #666666 !important;
+  border-color: #e0e0e0 !important;
+}
+
