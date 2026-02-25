@@ -38,19 +38,27 @@ function decodeJjwxcHtml(data: ArrayBuffer | string): string {
 /**
  * 直接请求晋江 PC 站的某一页评论，并用简单规则解析 HTML。
  *
- * 示例： https://www.jjwxc.net/comment.php?novelid={workId}&chapterid={chapterId}&page={page}
+ * - 如果传入 chapterId，则访问章节评论页：
+ *   https://www.jjwxc.net/comment.php?novelid={workId}&chapterid={chapterId}&page={page}
+ * - 如果不传 chapterId，则访问整本书评论页：
+ *   https://www.jjwxc.net/comment.php?novelid={workId}&page={page}
  */
 async function fetchCommentsByPage(params: {
   workId: string;
-  chapterId: string;
+  chapterId?: string;
   page: number;
 }): Promise<FetchCommentsResponse> {
   const { workId, chapterId, page } = params;
 
+  const url =
+    chapterId && chapterId.trim()
+      ? `${JJ_REVIEW_BASE}?novelid=${encodeURIComponent(
+          workId
+        )}&chapterid=${encodeURIComponent(chapterId.trim())}&page=${page}`
+      : `${JJ_REVIEW_BASE}?novelid=${encodeURIComponent(workId)}&page=${page}`;
+
   const res = await Taro.request<ArrayBuffer | string>({
-    url: `${JJ_REVIEW_BASE}?novelid=${encodeURIComponent(
-      workId
-    )}&chapterid=${encodeURIComponent(chapterId)}&page=${page}`,
+    url,
     method: 'GET',
     // 晋江评论页使用的是 GB18030/GBK 编码，这里以二进制拿到原始字节再自行转码
     responseType: 'arraybuffer'
@@ -94,15 +102,15 @@ async function fetchCommentsByPage(params: {
     if (!text) continue;
 
     // 尝试从文本中抽取章节信息与时间信息（都非必需）
-    let chapterId = '';
-    // PC 页中常见格式：“所评章节：1”
+    let parsedChapterId = '';
+    // PC 页中常见格式：“所评章节：1”，这里仅保留数字部分，前端再拼接“第 x 章”
     const chapterMatchNew = text.match(/(?:\u6240\u8bc4\u7ae0\u8282|当前章节)[：:]\s*(\d+)/); // 所评章节 / 当前章节
     if (chapterMatchNew && chapterMatchNew[1]) {
-      chapterId = `第${chapterMatchNew[1]}章`;
+      parsedChapterId = chapterMatchNew[1];
     } else {
       const chapterMatch = text.match(/第(.+?)章/);
-      if (chapterMatch && chapterMatch[0]) {
-        chapterId = chapterMatch[0];
+      if (chapterMatch && chapterMatch[1]) {
+        parsedChapterId = chapterMatch[1];
       }
     }
 
@@ -118,11 +126,34 @@ async function fetchCommentsByPage(params: {
       continue;
     }
 
-    // 用户名大概率出现在“用户名 评论于 时间”一类格式中，这里不做强依赖
+    // 用户名：
+    // 1. 优先从 HTML 中通过读者链接解析（onereader.php / oneauthor.php），最稳定
+    // 2. 若失败，再尝试“网友：<a>用户名</a> 评论：”结构
+    // 3. 再失败，则退回到纯文本正则，但排除“ 不看TA的 ”等操作项
     let userName = '';
-    const userMatch = text.match(/([\u4e00-\u9fa5A-Za-z0-9_]+)\s*(?:\u8bc4\u8bba|\u8bf4|\u8868\u793a)/); // 简单猜测
-    if (userMatch && userMatch[1]) {
-      userName = userMatch[1];
+
+    const readerLinkMatch = cleanedBlock.match(
+      /<a[^>]+(?:onereader\.php|oneauthor\.php)[^>]*>([^<]+)<\/a>/i
+    );
+    if (readerLinkMatch && readerLinkMatch[1]) {
+      userName = readerLinkMatch[1].trim();
+    } else {
+      const userByHtml = cleanedBlock.match(/网友[：:]\s*<a[^>]*>([^<]+)<\/a>/i);
+      if (userByHtml && userByHtml[1]) {
+        userName = userByHtml[1].trim();
+      } else {
+        const userByTag = text.match(/网友[：:]\s*([^\s\[]+?)\s*评论/);
+        if (userByTag && userByTag[1]) {
+          userName = userByTag[1].trim();
+        } else {
+          const userMatch = text.match(
+            /([\u4e00-\u9fa5A-Za-z0-9_]+)\s*(?:\u8bc4\u8bba|\u8bf4|\u8868\u793a)/
+          ); // 简单猜测
+          if (userMatch && userMatch[1] && userMatch[1] !== '不看TA的') {
+            userName = userMatch[1].trim();
+          }
+        }
+      }
     }
 
     // 正文：只截取“所评章节”之后到“来自”之前的内容，尽量排除头尾无关信息
@@ -142,8 +173,10 @@ async function fetchCommentsByPage(params: {
       content = content.slice(start, end).trim();
     } else {
       // 回退策略：去掉时间、章节等明显信息后，作为 content
-      if (chapterId) {
-        content = content.replace(chapterId, '');
+      if (parsedChapterId) {
+        // 删除类似“第1章”整段
+        const chapterPattern = new RegExp(`第\\s*${parsedChapterId}\\s*章`, 'g');
+        content = content.replace(chapterPattern, '');
       }
       if (createdAt) {
         content = content.replace(createdAt, '');
@@ -159,7 +192,7 @@ async function fetchCommentsByPage(params: {
 
     comments.push({
       id: `jj-${workId}-${page}-${floor}`,
-      chapterId: chapterId || '未知章节',
+      chapterId: parsedChapterId || '未知章节',
       floor,
       content,
       userName: userName || undefined,
@@ -188,7 +221,7 @@ export async function fetchAllCommentsOfWork(params: {
   chapterId?: string;
   page?: number;
 }): Promise<FetchCommentsResponse> {
-  const { workId, chapterId = '1', page = 1 } = params;
+  const { workId, chapterId, page = 1 } = params;
 
   return fetchCommentsByPage({
     workId,

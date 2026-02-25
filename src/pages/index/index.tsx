@@ -98,10 +98,11 @@ const IndexPage: React.FC = () => {
       try {
         Taro.showLoading({ title: '拉取评论中…', mask: true });
 
-        // 1. 拉取作品下指定章节的某一页评论
+        // 1. 拉取作品下指定章节（或整本书）的某一页评论
         const { comments, hasMore: pageHasMore } = await fetchAllCommentsOfWork({
           workId: workId.trim(),
-          chapterId: chapterId.trim() || '1',
+          // 若章节 ID 留空，则不传 chapterId，走整本书评论链接：comment.php?novelid=...&page=1
+          chapterId: chapterId.trim() || undefined,
           page
         });
 
@@ -208,7 +209,7 @@ const IndexPage: React.FC = () => {
         <View className='field-label'>章节 ID（chapterid，可选）</View>
         <Input
           className='field-input'
-          placeholder='例如：1；如站点支持，可填 0 表示全书评论'
+          placeholder='例如：1；留空则拉取整本书最近评论'
           value={chapterId}
           onInput={(e) => setChapterId(e.detail.value)}
         />
