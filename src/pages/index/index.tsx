@@ -228,7 +228,7 @@ const IndexPage: React.FC = () => {
         />
         <Text className='hint-text'>
           不填写章节 ID 时，会拉取整篇文最新 100 条评论，即直接展示在文章首页的评论，无其他限制；
-          但填写章节 ID 时，只能填写非 VIP 章节，因为 VIP 章节的评论需购买后才能查看。
+          但填写章节 ID 时，只能填写非 VIP 章节 ID，因为 VIP 章节的评论需购买后才能查看。
         </Text>
 
         <View className='field-label'>恶意评论定义（Prompt，可自定义）</View>
