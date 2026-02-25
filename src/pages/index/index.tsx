@@ -212,12 +212,24 @@ const IndexPage: React.FC = () => {
         />
 
         <View className='field-label'>晋江作品 ID</View>
-        <Input
-          className='field-input'
-          placeholder='例如：1234567'
-          value={workId}
-          onInput={(e) => setWorkId(e.detail.value)}
-        />
+        <View className='field-input-row'>
+          <View className='field-input field-input--with-clear'>
+            <Input
+              className='field-input-inner'
+              placeholder='例如：1234567'
+              value={workId}
+              onInput={(e) => setWorkId(e.detail.value)}
+            />
+            {!!workId && (
+              <View
+                className='field-clear-btn'
+                onClick={() => setWorkId('')}
+              >
+                <Text>×</Text>
+              </View>
+            )}
+          </View>
+        </View>
 
         <View className='field-label'>章节 ID（可选）</View>
         <Input
