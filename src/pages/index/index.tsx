@@ -216,7 +216,7 @@ const IndexPage: React.FC = () => {
 
         <View className='field-label'>恶意评论定义（Prompt，可自定义）</View>
         <Textarea
-          className='field-input'
+          className='field-input field-textarea'
           style={{ minHeight: '180px' }}
           value={prompt}
           maxlength={-1}
@@ -246,21 +246,25 @@ const IndexPage: React.FC = () => {
               <Text>，恶意 {maliciousCount} 条（已自动隐藏）。</Text>
             </View>
             <View className='pagination-row'>
-              <Button
-                size='mini'
-                disabled={loading || currentPage <= 1}
-                onClick={handlePrevPage}
-              >
-                上一页
-              </Button>
-              <Text style={{ marginLeft: 8, marginRight: 8 }}>第 {currentPage} 页</Text>
-              <Button
-                size='mini'
-                disabled={loading || !hasMore}
-                onClick={handleNextPage}
-              >
-                下一页
-              </Button>
+              {currentPage > 1 && (
+                <Button
+                  size='mini'
+                  disabled={loading}
+                  onClick={handlePrevPage}
+                >
+                  上一页
+                </Button>
+              )}
+              <Text>第 {currentPage} 页</Text>
+              {hasMore && (
+                <Button
+                  size='mini'
+                  disabled={loading}
+                  onClick={handleNextPage}
+                >
+                  下一页
+                </Button>
+              )}
             </View>
           </>
         )}

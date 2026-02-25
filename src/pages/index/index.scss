@@ -31,6 +31,11 @@
   font-size: 28px;
 }
 
+.field-textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .primary-btn {
   margin-top: 20px;
   height: 88px;
@@ -39,6 +44,11 @@
   color: #ffffff;
   font-size: 30px;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: none;
 }
 
 .hint-text {
@@ -87,5 +97,14 @@
 .badge-malicious {
   background-color: #ffecec;
   color: #d93025;
+}
+
+.pagination-row {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  font-size: 24px;
 }
 
