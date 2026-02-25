@@ -26,6 +26,7 @@ const IndexPage: React.FC = () => {
   const [workId, setWorkId] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [chapterId, setChapterId] = useState('');
+  const [showPromptEditor, setShowPromptEditor] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
@@ -227,18 +228,28 @@ const IndexPage: React.FC = () => {
         />
 
         <View className='field-label'>恶意评论定义（Prompt，可自定义）</View>
-        <Textarea
-          className='field-input field-textarea'
-          style={{ minHeight: '180px' }}
-          value={prompt}
-          maxlength={-1}
-          onInput={(e) => setPrompt(e.detail.value)}
-          placeholder='在这里描述：你认为具有什么特征的评论是“有恶意”的'
-        />
-
-        <Text className='hint-text'>
-          你可以根据需要自行修改上方 Prompt，例如只过滤“人身攻击 + 引战”，或加入针对某类内容的特殊规则。
+        <Text
+          className='hint-text'
+          onClick={() => setShowPromptEditor((v) => !v)}
+        >
+          {showPromptEditor ? '收起定义' : '展开并编辑恶意评论定义'}
         </Text>
+        {showPromptEditor && (
+          <>
+            <Textarea
+              className='field-input field-textarea'
+              style={{ minHeight: '180px' }}
+              value={prompt}
+              maxlength={-1}
+              onInput={(e) => setPrompt(e.detail.value)}
+              placeholder='在这里描述：你认为具有什么特征的评论是“有恶意”的'
+            />
+
+            <Text className='hint-text'>
+              你可以根据需要自行修改上方 Prompt，例如只过滤“人身攻击 + 引战”，或加入针对某类内容的特殊规则。
+            </Text>
+          </>
+        )}
 
         <Button
           className='primary-btn'
@@ -284,8 +295,8 @@ const IndexPage: React.FC = () => {
         <>
           <View id='commentsAnchor' />
           <Text className='section-title'>无恶意评论列表</Text>
-          <View className='card' style={{ marginTop: 0 }}>
-            <ScrollView scrollY style={{ maxHeight: '60vh' }}>
+          <View className='card' style={{ marginTop: '10px' }}>
+            <ScrollView scrollY style={{ maxHeight: '80vh' }}>
               {safeComments.map((c) => (
                 <View key={c.id} className='comment-item'>
                   <View className='comment-meta'>
