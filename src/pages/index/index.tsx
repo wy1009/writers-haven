@@ -312,7 +312,7 @@ const IndexPage: React.FC = () => {
           <View id='commentsAnchor' />
           <Text className='section-title'>无恶意评论列表</Text>
           <View className='card' style={{ marginTop: '10px' }}>
-            <ScrollView scrollY style={{ maxHeight: '80vh' }}>
+            <ScrollView scrollY style={{ maxHeight: '68vh' }}>
               {safeComments.map((c) => (
                 <View key={c.id} className='comment-item'>
                   <View className='comment-meta'>
