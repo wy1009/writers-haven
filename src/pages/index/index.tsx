@@ -137,6 +137,18 @@ const IndexPage: React.FC = () => {
         setAllComments(withFlag);
         setSafeComments(safe);
 
+        // 滚动到评论列表附近，方便直接查看结果
+        Taro.nextTick(() => {
+          try {
+            Taro.pageScrollTo({
+              selector: '#commentsAnchor',
+              duration: 300
+            });
+          } catch (e) {
+            console.warn('滚动到评论列表失败', e);
+          }
+        });
+
         Taro.hideLoading();
         Taro.showToast({
           title: `过滤完成：安全 ${safe.length} 条`,
@@ -206,7 +218,7 @@ const IndexPage: React.FC = () => {
           onInput={(e) => setWorkId(e.detail.value)}
         />
 
-        <View className='field-label'>章节 ID（chapterid，可选）</View>
+        <View className='field-label'>章节 ID（可选）</View>
         <Input
           className='field-input'
           placeholder='例如：1；留空则拉取整本书最近评论'
@@ -270,6 +282,7 @@ const IndexPage: React.FC = () => {
 
       {safeComments.length > 0 && (
         <>
+          <View id='commentsAnchor' />
           <Text className='section-title'>无恶意评论列表</Text>
           <View className='card' style={{ marginTop: 0 }}>
             <ScrollView scrollY style={{ maxHeight: '60vh' }}>
